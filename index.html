@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f2937">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Từ vựng">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Từ vựng tiếng Anh</title>
+<style>
+:root{--bg:#f3f4f8;--card:#fff;--ink:#1f2937;--muted:#6b7280;--accent:#2563eb;--ok:#16a34a;--bad:#ea580c;--line:#e5e7eb}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--card:#1e293b;--ink:#f1f5f9;--muted:#94a3b8;--accent:#60a5fa;--line:#334155}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+header{padding:18px 16px 6px;font-size:20px;font-weight:700;max-width:520px;margin:0 auto}
+main{padding:0 14px 40px;max-width:520px;margin:0 auto}
+.card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.label{font-size:13px;color:var(--muted);margin:0 0 8px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.word{font-size:34px;font-weight:800;margin:4px 0 2px;word-break:break-word}
+.meaning{font-size:18px;color:var(--accent);font-weight:600;margin-bottom:14px}
+.example{font-size:16px;line-height:1.45}
+.example-vi{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.45}
+.row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.btn{flex:1;min-width:110px;border:0;border-radius:12px;padding:12px 10px;font-size:15px;font-weight:600;cursor:pointer;background:var(--line);color:var(--ink)}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.bad{background:var(--bad);color:#fff}
+.btn.primary{background:var(--accent);color:#fff}
+.stats{font-size:13px;color:var(--muted);margin-top:10px}
+.setting{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.setting:last-child{border-bottom:0}
+select,input,textarea{width:100%;font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+select{width:auto}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.hidden{display:none!important}
+.ios-tip{background:#fef3c7;color:#78350f;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:14px;line-height:1.5}
+.ios-tip b{color:#451a03}
+@media (prefers-color-scheme:dark){.ios-tip{background:#422006;color:#fde68a}.ios-tip b{color:#fef3c7}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center;z-index:50}
+.toast.show{opacity:1}
+/* Màn hình chờ */
+.lock{position:fixed;inset:0;z-index:40;background:#0b0f19;color:#f8fafc;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px 24px;user-select:none;cursor:pointer}
+.lock-time{position:absolute;top:calc(env(safe-area-inset-top) + 28px);font-size:22px;font-weight:300;opacity:.75}
+.lock-ctx{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:#93c5fd;margin-bottom:18px}
+.lock-word{font-size:clamp(44px,14vw,92px);font-weight:800;line-height:1.05;margin-bottom:14px;word-break:break-word}
+.lock-word.long{font-size:clamp(30px,9vw,58px)}
+.lock-meaning{font-size:clamp(20px,6vw,28px);color:#fbbf24;font-weight:600;margin-bottom:26px}
+.lock-example{font-size:clamp(17px,5vw,22px);line-height:1.4;max-width:600px}
+.lock-example-vi{font-size:clamp(15px,4.2vw,18px);color:#94a3b8;margin-top:10px;max-width:600px;line-height:1.4}
+.lock-hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 22px);font-size:13px;color:#64748b}
+.lock-close{position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:14px;background:#1e293b;color:#e2e8f0;border:0;border-radius:999px;width:40px;height:40px;font-size:18px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>Từ vựng tiếng Anh</header>
+<main>
+
+  <section class="ios-tip hidden" id="iosTip">
+    <b>Cài lên iPhone:</b> mở trang này bằng Safari, chạm nút Chia sẻ (ô vuông có mũi tên hướng lên), chọn <b>Thêm vào Màn hình chính</b>, rồi mở ứng dụng từ biểu tượng mới. Chỉ mở từ biểu tượng này thì thông báo mới hoạt động.
+  </section>
+
+  <section class="card">
+    <p class="label">Ngữ cảnh học</p>
+    <div class="chips" id="ctxChips"></div>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="card" id="studyCard">
+    <p class="label" id="ctxLabel"></p>
+    <div class="word" id="word"></div>
+    <div class="meaning" id="meaning"></div>
+    <div class="example" id="example"></div>
+    <div class="example-vi" id="exampleVi"></div>
+    <div class="row">
+      <button class="btn ok" id="known">✓ Đã thuộc</button>
+      <button class="btn bad" id="unknown">✗ Chưa thuộc</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="next">Từ khác →</button>
+      <button class="btn primary" id="openLock">🔒 Màn hình chờ</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <p class="label">Nhắc học</p>
+    <div class="setting">
+      <span>Thông báo trên màn hình khóa</span>
+      <input type="checkbox" id="notifyToggle" style="width:auto;transform:scale(1.3)">
+    </div>
+    <div class="setting">
+      <span>Nhắc mỗi</span>
+      <select id="notifyEvery">
+        <option value="15">15 phút</option>
+        <option value="30">30 phút</option>
+        <option value="60">1 giờ</option>
+        <option value="120">2 giờ</option>
+      </select>
+    </div>
+    <div class="setting">
+      <span>Đổi từ trên màn hình chờ mỗi</span>
+      <select id="lockSecs">
+        <option value="10">10 giây</option>
+        <option value="20">20 giây</option>
+        <option value="30">30 giây</option>
+        <option value="60">1 phút</option>
+        <option value="0">Chỉ chạm để đổi</option>
+      </select>
+    </div>
+    <p class="stats">Thông báo chỉ gửi từ 7:00 đến 22:00. Cần cho phép thông báo của trình duyệt.</p>
+  </section>
+
+  <section class="card">
+    <p class="label">Thêm từ của tôi</p>
+    <div class="field"><label>Từ hoặc cụm từ</label><input id="cWord" placeholder="ví dụ: boarding pass"></div>
+    <div class="field"><label>Nghĩa tiếng Việt</label><input id="cMeaning" placeholder="ví dụ: thẻ lên máy bay"></div>
+    <div class="field"><label>Câu ví dụ (không bắt buộc)</label><textarea id="cExample" rows="2"></textarea></div>
+    <div class="field"><label>Ngữ cảnh</label>
+      <select id="cCtx"></select>
+    </div>
+    <button class="btn primary" id="addCustom" style="width:100%">Thêm từ</button>
+  </section>
+
+</main>
+
+<div id="lock" class="lock hidden" role="dialog" aria-label="Màn hình chờ từ vựng">
+  <div class="lock-time" id="lockTime"></div>
+  <button class="lock-close" id="lockClose" aria-label="Thoát">✕</button>
+  <div class="lock-ctx" id="lockCtx"></div>
+  <div class="lock-word" id="lockWord"></div>
+  <div class="lock-meaning" id="lockMeaning"></div>
+  <div class="lock-example" id="lockExample"></div>
+  <div class="lock-example-vi" id="lockExampleVi"></div>
+  <div class="lock-hint">Chạm để sang từ tiếp theo</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="words.js"></script>
+<script>
+/* ---------- Dữ liệu: c = ngữ cảnh, w = từ, v = nghĩa, e = câu tiếng Anh, ev = nghĩa câu ---------- */
+const WORDS = [
+{c:'school',w:'homework',v:'bài tập về nhà',e:'I have a lot of homework tonight.',ev:'Tối nay tôi có rất nhiều bài tập về nhà.'},
+{c:'school',w:'classmate',v:'bạn cùng lớp',e:'My classmate helped me with the math problem.',ev:'Bạn cùng lớp đã giúp tôi giải bài toán.'},
+{c:'school',w:'blackboard',v:'bảng đen',e:'Please write the date on the blackboard.',ev:'Làm ơn viết ngày tháng lên bảng.'},
+{c:'school',w:'exam',v:'bài kiểm tra',e:'The English exam is next Monday.',ev:'Bài kiểm tra tiếng Anh vào thứ Hai tuần sau.'},
+{c:'school',w:'lecture',v:'bài giảng',e:'The lecture starts at nine o\'clock.',ev:'Bài giảng bắt đầu lúc 9 giờ.'},
+{c:'school',w:'presentation',v:'bài thuyết trình',e:'I\'m giving a presentation about my hometown.',ev:'Tôi sẽ thuyết trình về quê hương mình.'},
+{c:'school',w:'absent',v:'vắng mặt',e:'Who is absent today?',ev:'Hôm nay ai vắng mặt?'},
+{c:'school',w:'Could you repeat that, please?',v:'Bạn có thể nhắc lại không?',e:'Sorry, I didn\'t hear. Could you repeat that, please?',ev:'Xin lỗi, tôi chưa nghe rõ. Bạn có thể nhắc lại không?'},
+
+{c:'restaurant',w:'menu',v:'thực đơn',e:'Can I see the menu, please?',ev:'Cho tôi xem thực đơn được không?'},
+{c:'restaurant',w:'bill',v:'hóa đơn',e:'Could we have the bill, please?',ev:'Cho chúng tôi xin hóa đơn.'},
+{c:'restaurant',w:'reservation',v:'đặt bàn trước',e:'I\'d like to make a reservation for two.',ev:'Tôi muốn đặt bàn cho hai người.'},
+{c:'restaurant',w:'allergic',v:'bị dị ứng',e:'I\'m allergic to peanuts.',ev:'Tôi bị dị ứng với đậu phộng.'},
+{c:'restaurant',w:'spicy',v:'cay',e:'Is this dish very spicy?',ev:'Món này có cay nhiều không?'},
+{c:'restaurant',w:'takeaway',v:'mang đi',e:'I\'d like to get this takeaway.',ev:'Tôi muốn mang món này về.'},
+{c:'restaurant',w:'Table for two, please.',v:'Cho bàn hai người.',e:'Hello, table for two, please.',ev:'Chào bạn, cho bàn hai người.'},
+{c:'restaurant',w:'Could I have some water?',v:'Cho tôi xin ít nước.',e:'Could I have some water, please?',ev:'Cho tôi xin ít nước được không?'},
+
+{c:'office',w:'deadline',v:'hạn chót',e:'The deadline for the report is Friday.',ev:'Hạn nộp báo cáo là thứ Sáu.'},
+{c:'office',w:'colleague',v:'đồng nghiệp',e:'My colleague will join the meeting online.',ev:'Đồng nghiệp của tôi sẽ tham gia cuộc họp trực tuyến.'},
+{c:'office',w:'agenda',v:'chương trình họp',e:'Let\'s look at the agenda first.',ev:'Chúng ta xem chương trình họp trước nhé.'},
+{c:'office',w:'approve',v:'phê duyệt',e:'The director approved the plan yesterday.',ev:'Giám đốc đã phê duyệt kế hoạch hôm qua.'},
+{c:'office',w:'proposal',v:'đề xuất',e:'I\'ve sent you the proposal by email.',ev:'Tôi đã gửi cho bạn bản đề xuất qua email.'},
+{c:'office',w:'supervisor',v:'cấp trên trực tiếp',e:'My supervisor wants to see the draft.',ev:'Cấp trên của tôi muốn xem bản nháp.'},
+{c:'office',w:'feedback',v:'góp ý, phản hồi',e:'Thank you for your feedback.',ev:'Cảm ơn bạn đã góp ý.'},
+{c:'office',w:'Could we reschedule the meeting?',v:'Chúng ta có thể dời lịch họp không?',e:'Something came up. Could we reschedule the meeting?',ev:'Có việc đột xuất. Chúng ta dời lịch họp được không?'},
+
+{c:'travel',w:'boarding pass',v:'thẻ lên máy bay',e:'Here is your boarding pass.',ev:'Đây là thẻ lên máy bay của bạn.'},
+{c:'travel',w:'gate',v:'cửa lên máy bay',e:'Which gate does the flight leave from?',ev:'Chuyến bay khởi hành từ cửa nào?'},
+{c:'travel',w:'delay',v:'hoãn, trì hoãn',e:'Our flight is delayed by two hours.',ev:'Chuyến bay của chúng tôi bị hoãn hai tiếng.'},
+{c:'travel',w:'luggage',v:'hành lý',e:'Where can I pick up my luggage?',ev:'Tôi có thể lấy hành lý ở đâu?'},
+{c:'travel',w:'passport',v:'hộ chiếu',e:'Please show me your passport.',ev:'Vui lòng cho tôi xem hộ chiếu.'},
+{c:'travel',w:'aisle seat',v:'ghế cạnh lối đi',e:'I\'d prefer an aisle seat, please.',ev:'Tôi muốn ghế cạnh lối đi.'},
+{c:'travel',w:'transfer',v:'chuyển tiếp, quá cảnh',e:'I have a transfer in Singapore.',ev:'Tôi có chuyến bay chuyển tiếp ở Singapore.'},
+{c:'travel',w:'Where is the taxi stand?',v:'Bến taxi ở đâu?',e:'Excuse me, where is the taxi stand?',ev:'Xin lỗi, bến taxi ở đâu ạ?'},
+
+{c:'hotel',w:'check in',v:'nhận phòng',e:'What time can I check in?',ev:'Mấy giờ tôi có thể nhận phòng?'},
+{c:'hotel',w:'check out',v:'trả phòng',e:'I\'d like to check out now.',ev:'Tôi muốn trả phòng bây giờ.'},
+{c:'hotel',w:'room key',v:'chìa khóa phòng',e:'Here is your room key. Room 504.',ev:'Đây là chìa khóa phòng của quý khách, phòng 504.'},
+{c:'hotel',w:'breakfast included',v:'đã bao gồm bữa sáng',e:'Is breakfast included in the price?',ev:'Giá phòng đã bao gồm bữa sáng chưa?'},
+{c:'hotel',w:'wake-up call',v:'cuộc gọi đánh thức',e:'Could I have a wake-up call at 6 a.m.?',ev:'Tôi có thể nhờ gọi đánh thức lúc 6 giờ sáng không?'},
+{c:'hotel',w:'deposit',v:'tiền đặt cọc',e:'Do you need a deposit?',ev:'Có cần đặt cọc không?'},
+{c:'hotel',w:'elevator',v:'thang máy',e:'The elevator is on your left.',ev:'Thang máy ở bên trái của bạn.'},
+{c:'hotel',w:'housekeeping',v:'bộ phận dọn phòng',e:'Housekeeping will clean your room at noon.',ev:'Bộ phận dọn phòng sẽ dọn phòng của bạn vào buổi trưa.'},
+
+{c:'shopping',w:'discount',v:'giảm giá',e:'Is there a discount for students?',ev:'Có giảm giá cho sinh viên không?'},
+{c:'shopping',w:'size',v:'kích cỡ',e:'Do you have this in a larger size?',ev:'Có cỡ lớn hơn không?'},
+{c:'shopping',w:'fitting room',v:'phòng thử đồ',e:'The fitting room is over there.',ev:'Phòng thử đồ ở đằng kia.'},
+{c:'shopping',w:'receipt',v:'hóa đơn mua hàng',e:'Can I have the receipt, please?',ev:'Cho tôi xin hóa đơn mua hàng.'},
+{c:'shopping',w:'refund',v:'hoàn tiền',e:'I\'d like a refund, please.',ev:'Tôi muốn được hoàn tiền.'},
+{c:'shopping',w:'cashier',v:'thu ngân, quầy thanh toán',e:'Please pay at the cashier.',ev:'Vui lòng thanh toán tại quầy thu ngân.'},
+{c:'shopping',w:'on sale',v:'đang giảm giá',e:'These shoes are on sale this week.',ev:'Đôi giày này đang giảm giá trong tuần này.'},
+{c:'shopping',w:'Do you take credit cards?',v:'Có nhận thẻ tín dụng không?',e:'Do you take credit cards here?',ev:'Ở đây có nhận thẻ tín dụng không?'},
+
+{c:'daily',w:'Nice to meet you.',v:'Rất vui được gặp bạn.',e:'Nice to meet you. I\'m Linh.',ev:'Rất vui được gặp bạn. Tôi là Linh.'},
+{c:'daily',w:'How have you been?',v:'Dạo này bạn thế nào?',e:'Hi Mai! How have you been?',ev:'Chào Mai! Dạo này bạn thế nào?'},
+{c:'daily',w:'Let me think about it.',v:'Để tôi suy nghĩ đã.',e:'That sounds good. Let me think about it.',ev:'Nghe hay đấy. Để tôi suy nghĩ đã.'},
+{c:'daily',w:'I\'m running late.',v:'Tôi sắp trễ rồi.',e:'Sorry, I\'m running late. Five more minutes.',ev:'Xin lỗi, tôi sắp trễ rồi. Thêm năm phút nữa.'},
+{c:'daily',w:'by the way',v:'nhân tiện',e:'By the way, did you finish the report?',ev:'Nhân tiện, bạn làm xong báo cáo chưa?'},
+{c:'daily',w:'I\'m not sure.',v:'Tôi không chắc.',e:'Is it open on Sunday? I\'m not sure.',ev:'Chủ nhật có mở cửa không? Tôi không chắc.'},
+{c:'daily',w:'Take your time.',v:'Cứ từ từ nhé.',e:'Take your time. There\'s no rush.',ev:'Cứ từ từ nhé. Không cần vội.'},
+{c:'daily',w:'Sounds good to me.',v:'Tôi đồng ý.',e:'Lunch at noon? Sounds good to me.',ev:'Ăn trưa lúc 12 giờ nhé? Tôi đồng ý.'}
+];
+
+const CONTEXTS = [
+  {id:'school',name:'Lớp học',icon:'🏫'},
+  {id:'restaurant',name:'Nhà hàng',icon:'🍜'},
+  {id:'office',name:'Cơ quan',icon:'🏢'},
+  {id:'travel',name:'Sân bay',icon:'✈️'},
+  {id:'hotel',name:'Khách sạn',icon:'🛎️'},
+  {id:'shopping',name:'Mua sắm',icon:'🛍️'},
+  {id:'daily',name:'Giao tiếp',icon:'💬'},
+  {id:'custom',name:'Từ của tôi',icon:'⭐'}
+];
+const ctxName = id => (CONTEXTS.find(c => c.id === id) || {name:id}).name;
+
+/* ---------- Lưu trữ ---------- */
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('vocab.' + k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem('vocab.' + k, JSON.stringify(v)); } catch {} }
+};
+const state = {
+  ctx: store.get('ctx', ['daily']),
+  progress: store.get('progress', {}),
+  custom: store.get('custom', []),
+  settings: Object.assign({notify:false, notifyEvery:60, lockSecs:20, lastNotify:0}, store.get('settings', {}))
+};
+const saveAll = () => { store.set('ctx', state.ctx); store.set('progress', state.progress); store.set('custom', state.custom); store.set('settings', state.settings); };
+
+const $ = id => document.getElementById(id);
+const key = w => w.w.toLowerCase();
+const allWords = () => [...WORDS, ...EXTRA_WORDS, ...state.custom];
+const pool = () => allWords().filter(w => state.ctx.includes(w.c));
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- Chọn từ: từ chưa thuộc được ưu tiên hơn ---------- */
+let current = null;
+function pick(){
+  const list = pool();
+  if (!list.length) return null;
+  const weight = w => { const p = state.progress[key(w)]; return p === 'known' ? 0.5 : p === 'unknown' ? 4 : 2; };
+  for (let attempt = 0; attempt < 2; attempt++){
+    const weights = list.map(weight);
+    let r = Math.random() * weights.reduce((a, b) => a + b, 0);
+    let chosen = list[list.length - 1];
+    for (let i = 0; i < list.length; i++){ r -= weights[i]; if (r <= 0){ chosen = list[i]; break; } }
+    if (chosen !== current || list.length === 1) return chosen;
+  }
+  return current;
+}
+
+/* ---------- Giao diện học ---------- */
+function renderChips(){
+  const box = $('ctxChips'); box.innerHTML = '';
+  CONTEXTS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip' + (state.ctx.includes(c.id) ? ' on' : '');
+    b.textContent = c.icon + ' ' + c.name;
+    b.onclick = () => {
+      state.ctx = state.ctx.includes(c.id) ? state.ctx.filter(x => x !== c.id) : [...state.ctx, c.id];
+      saveAll(); renderChips(); current = null; nextWord(); renderStats();
+    };
+    box.appendChild(b);
+  });
+  $('cCtx').innerHTML = CONTEXTS.filter(c => c.id !== 'custom')
+    .map(c => `<option value="${c.id}">${c.name}</option>`).join('') + '<option value="custom">Từ của tôi</option>';
+}
+
+function renderStats(){
+  const list = pool();
+  const known = list.filter(w => state.progress[key(w)] === 'known').length;
+  $('stats').textContent = list.length ? `Đã thuộc ${known} / ${list.length} từ trong các ngữ cảnh đang chọn` : 'Hãy chọn ít nhất một ngữ cảnh.';
+}
+
+function showWord(w){
+  current = w;
+  if (!w){
+    $('ctxLabel').textContent = ''; $('word').textContent = 'Chưa có từ nào';
+    $('meaning').textContent = ''; $('example').textContent = ''; $('exampleVi').textContent = '';
+    return;
+  }
+  $('ctxLabel').textContent = ctxName(w.c);
+  $('word').textContent = w.w;
+  $('meaning').textContent = w.v;
+  $('example').textContent = w.e ? '“' + w.e + '”' : '';
+  $('exampleVi').textContent = w.ev || '';
+}
+
+function nextWord(){ showWord(pick()); }
+
+function mark(status){
+  if (!current) return;
+  state.progress[key(current)] = status;
+  saveAll(); renderStats();
+  nextWord();
+}
+
+/* ---------- Màn hình chờ ---------- */
+let lockTimer = null, clockTimer = null, wakeLock = null, lockWord = null;
+const lockOn = () => !$('lock').classList.contains('hidden');
+
+function showLockWord(){
+  const w = pick();
+  lockWord = w;
+  if (current === null || lockWord === null) current = w;
+  current = w;
+  const el = $('lockWord');
+  if (!w){
+    $('lockCtx').textContent = ''; el.textContent = 'Chọn ngữ cảnh để bắt đầu';
+    $('lockMeaning').textContent = ''; $('lockExample').textContent = ''; $('lockExampleVi').textContent = '';
+    return;
+  }
+  $('lockCtx').textContent = ctxName(w.c);
+  el.textContent = w.w;
+  el.classList.toggle('long', w.w.length > 14);
+  $('lockMeaning').textContent = w.v;
+  $('lockExample').textContent = w.e ? '“' + w.e + '”' : '';
+  $('lockExampleVi').textContent = w.ev || '';
+}
+
+function tickClock(){
+  const d = new Date();
+  $('lockTime').textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+function restartLockTimer(){
+  clearInterval(lockTimer); lockTimer = null;
+  const s = Number(state.settings.lockSecs);
+  if (s > 0 && lockOn()) lockTimer = setInterval(showLockWord, s * 1000);
+}
+
+async function acquireWake(){
+  try { if ('wakeLock' in navigator && lockOn()) wakeLock = await navigator.wakeLock.request('screen'); } catch {}
+}
+
+async function openLock(){
+  if (!pool().length){ toast('Hãy chọn ít nhất một ngữ cảnh'); return; }
+  $('lock').classList.remove('hidden');
+  showLockWord(); tickClock();
+  clearInterval(clockTimer); clockTimer = setInterval(tickClock, 15000);
+  restartLockTimer();
+  await acquireWake();
+  try { if (document.documentElement.requestFullscreen && !document.fullscreenElement) await document.documentElement.requestFullscreen(); } catch {}
+}
+
+function closeLock(){
+  $('lock').classList.add('hidden');
+  clearInterval(lockTimer); lockTimer = null;
+  clearInterval(clockTimer); clockTimer = null;
+  if (wakeLock){ wakeLock.release().catch(()=>{}); wakeLock = null; }
+  if (document.fullscreenElement){ document.exitFullscreen().catch(()=>{}); }
+}
+
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && lockOn()) acquireWake(); });
+
+/* ---------- Thông báo ---------- */
+async function sendReminder(){
+  const w = pick(); if (!w) return;
+  const title = w.w + ' — ' + w.v;
+  const opts = { body: w.e || '', tag: 'vocab', renotify: true, icon: 'icon.svg', badge: 'icon.svg' };
+  try {
+    const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration();
+    if (reg) reg.showNotification(title, opts);
+    else new Notification(title, opts);
+  } catch {}
+}
+
+const SUPPORTS_NOTIFY = 'Notification' in window;
+const IS_IOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const IS_STANDALONE = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+setInterval(() => {
+  const s = state.settings;
+  if (!SUPPORTS_NOTIFY || !s.notify || Notification.permission !== 'granted') return;
+  const h = new Date().getHours();
+  if (h < 7 || h >= 22) return;
+  if (Date.now() - (s.lastNotify || 0) >= s.notifyEvery * 60000){
+    s.lastNotify = Date.now(); saveAll(); sendReminder();
+  }
+}, 30000);
+
+async function setNotify(on){
+  if (on){
+    if (!SUPPORTS_NOTIFY){
+      toast(IS_IOS && !IS_STANDALONE ? 'Hãy thêm ứng dụng vào Màn hình chính rồi mở từ biểu tượng' : 'Trình duyệt này không hỗ trợ thông báo');
+      return false;
+    }
+    let perm = Notification.permission;
+    if (perm !== 'granted') perm = await Notification.requestPermission();
+    if (perm !== 'granted'){ toast('Bạn chưa cho phép thông báo'); return false; }
+  }
+  state.settings.notify = on; saveAll();
+  if (on) toast('Đã bật nhắc học');
+  return true;
+}
+
+/* ---------- Gắn sự kiện ---------- */
+$('known').onclick = () => mark('known');
+$('unknown').onclick = () => mark('unknown');
+$('next').onclick = nextWord;
+$('openLock').onclick = openLock;
+$('lock').onclick = e => { if (e.target.id !== 'lockClose') showLockWord(); };
+$('lockClose').onclick = e => { e.stopPropagation(); closeLock(); };
+
+$('notifyToggle').checked = !!state.settings.notify;
+$('notifyToggle').onchange = async e => {
+  const ok = await setNotify(e.target.checked);
+  if (!ok) e.target.checked = false;
+};
+$('notifyEvery').value = String(state.settings.notifyEvery);
+$('notifyEvery').onchange = e => { state.settings.notifyEvery = Number(e.target.value); saveAll(); };
+$('lockSecs').value = String(state.settings.lockSecs);
+$('lockSecs').onchange = e => { state.settings.lockSecs = Number(e.target.value); saveAll(); restartLockTimer(); };
+
+$('addCustom').onclick = () => {
+  const w = $('cWord').value.trim(), v = $('cMeaning').value.trim();
+  if (!w || !v){ toast('Nhập từ và nghĩa tiếng Việt'); return; }
+  const c = $('cCtx').value;
+  state.custom.push({c, w, v, e: $('cExample').value.trim(), ev: ''});
+  if (!state.ctx.includes(c)){ state.ctx.push(c); }
+  $('cWord').value = ''; $('cMeaning').value = ''; $('cExample').value = '';
+  saveAll(); renderChips(); renderStats(); nextWord();
+  toast('Đã thêm từ');
+};
+
+if ('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+if (IS_IOS && !IS_STANDALONE) $('iosTip').classList.remove('hidden');
+
+renderChips(); renderStats(); nextWord();
+</script>
+</body>
+</html>
